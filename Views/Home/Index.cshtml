@@ -1,0 +1,77 @@
+﻿@using DocRiskScanner.Services
+
+@{
+    ViewData["Title"] = "Document Risk Scanner";
+}
+
+<div class="hero">
+    <h1>📄 Document Risk Scanner</h1>
+    <p>Upload a contract or document and get instant AI-powered risk analysis</p>
+</div>
+
+<div class="upload-card">
+    <form asp-action="Upload" asp-controller="Home" method="post" enctype="multipart/form-data">
+        <input type="file" name="pdfFile" accept=".pdf" class="file-input" />
+        <button type="submit" class="btn-primary">Analyze Document</button>
+    </form>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="status error">@ViewBag.Error</div>
+    }
+
+    @if (ViewBag.FileName != null)
+    {
+        <div class="status success">✅ Loaded: @ViewBag.FileName</div>
+    }
+</div>
+
+@if (ViewBag.Analysis != null)
+{
+    RiskAnalysisResult analysis = ViewBag.Analysis;
+    var scoreColor = analysis.RiskScore >= 70 ? "#dc2626" : analysis.RiskScore >= 40 ? "#f59e0b" : "#16a34a";
+
+    <div class="result-card">
+        <div class="score-section">
+            <div class="score-circle" style="background: conic-gradient(@scoreColor 0% @(analysis.RiskScore)%, #e5e7eb @(analysis.RiskScore)% 100%);">
+                <div class="score-inner">
+                    <span class="score-number">@analysis.RiskScore</span>
+                    <span class="score-label">Risk Score</span>
+                </div>
+            </div>
+            <div class="summary-text">
+                <h3>Summary</h3>
+                <p>@analysis.Summary</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="issues-section">
+        <h3>Identified Issues (@analysis.Issues.Count)</h3>
+        @foreach (var issue in analysis.Issues)
+        {
+            var badgeClass = issue.RiskLevel.Trim().ToLower() switch
+            {
+                "high" => "badge-high",
+                "medium" => "badge-medium",
+                _ => "badge-low"
+            };
+
+            <div class="issue-card @badgeClass">
+                <div class="issue-header">
+                    <span class="issue-badge @badgeClass">@issue.RiskLevel</span>
+                    <span class="issue-clause">@issue.Clause</span>
+                </div>
+                <p class="issue-explanation">@issue.Explanation</p>
+            </div>
+        }
+    </div>
+}
+
+@if (ViewBag.ExtractedText != null)
+{
+    <div class="result-card">
+        <h3>Extracted Text Preview</h3>
+        <div class="text-preview">@ViewBag.ExtractedText</div>
+    </div>
+}
