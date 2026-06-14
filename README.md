@@ -1,4 +1,4 @@
-# DocRiskScanner 📄⚠️
+# DocRiskScanner 📄
 
 An AI-powered document risk analyzer built with ASP.NET Core MVC. Upload a contract, agreement, or policy document, and get an instant risk assessment — overall risk score, plain-English summary, and a breakdown of specific clauses that need attention.
 
